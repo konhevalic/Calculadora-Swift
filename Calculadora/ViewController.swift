@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     var operacaoAritmetica = false
     var pontoFlutuante = false
     var tipoOperacao = ""
+    var fimOperacao = false
     
     
     @IBOutlet weak var display: UILabel!
@@ -39,12 +40,24 @@ class ViewController: UIViewController {
             primeiroNumero = String(primeiroOperando - segundoOperando)
         case "multiplicar":
             primeiroNumero = String(primeiroOperando * segundoOperando)
-        default:
+        case "dividir":
             if(segundoOperando != 0) {
                 primeiroNumero = String(primeiroOperando / segundoOperando)
             }
+        default:
+            display.text = primeiroNumero
         }
-        display.text = tipoOperacao == "dividir" && segundoOperando == 0 ? "Não é um número" : primeiroNumero
+        
+        let resultado = primeiroNumero.components(separatedBy: ".")
+        var valorDisplay = ""
+        
+        if (resultado.count > 1 && resultado[1] == "0") {
+            valorDisplay = resultado[0]
+        } else {
+            valorDisplay = primeiroNumero
+        }
+        
+        display.text = tipoOperacao == "dividir" && segundoOperando == 0 ? "Não é um número" : valorDisplay
     }
     
     @IBAction func num0(_ sender: UIButton) {
@@ -98,10 +111,18 @@ class ViewController: UIViewController {
     }
     
     @IBAction func somar(_ sender: Any) {
-        calcularResultado()
+        if operacaoAritmetica {
+            calcularResultado()
+        }
+        
         tipoOperacao = "somar"
         operacaoAritmetica = true
-        valorInserido = ""
+        if operacaoAritmetica {
+            valorInserido = ""
+        } else {
+            valorInserido = primeiroNumero
+        }
+        
     }
     
     @IBAction func subtrair(_ sender: Any) {
@@ -171,9 +192,10 @@ class ViewController: UIViewController {
     @IBAction func resultado(_ sender: Any) {
         calcularResultado()
         tipoOperacao = ""
-        primeiroNumero = ""
-        segundoNumero = ""
-        valorInserido = ""
+        //primeiroNumero = ""
+        //segundoNumero = ""
+        //valorInserido = ""
+        operacaoAritmetica = false
     }
     
     override func viewDidLoad() {
